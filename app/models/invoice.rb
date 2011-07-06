@@ -1,5 +1,11 @@
 class Invoice < ActiveRecord::Base
-  attr_money :total_price
+  attr_accessor_with_default :currency, "USD"
+  
+  composed_of :total_price,
+    :class_name => "Money",
+    :mapping => [%w(total_price cents), %w(currency currency_as_string)],
+    :constructor => Proc.new { |cents, currency| Money.new(cents || 0, currency || Money.default_currency) },
+    :converter => Proc.new { |value| value.respond_to?(:to_money) ? value.to_money : raise(ArgumentError, "Can't convert #{value.class} to Money") }
   
   has_many :invoice_items, :dependent => :destroy
   
@@ -8,8 +14,7 @@ class Invoice < ActiveRecord::Base
   before_save :do_before_save
   
   def do_before_save
-    #puts self.invoice_items.inspect
-    self.invoice_items[0]
+    self.invoice_items[0] # NOTE: Uncommenting this out will cause issues?
     
     return true
   end

@@ -17,7 +17,7 @@ class InvoicesController < ApplicationController
   # GET /invoices/1
   # GET /invoices/1.xml
   def show
-    redirect_to request.referer
+    redirect_to params.merge(:action => "index")
   end
 
   # GET /invoices/new
