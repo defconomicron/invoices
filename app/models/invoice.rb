@@ -8,7 +8,8 @@ class Invoice < ActiveRecord::Base
   before_save :do_before_save
   
   def do_before_save
-    puts self.invoice_items.inspect
+    #puts self.invoice_items.inspect
+    self.invoice_items[0]
     
     return true
   end

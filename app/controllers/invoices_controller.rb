@@ -3,40 +3,21 @@ class InvoicesController < ApplicationController
   # GET /invoices.xml
   def index
     @invoice = Invoice.find(params[:id]) rescue Invoice.new
-    
-    _index
+    @invoices = Invoice.all
+    1.times.each do |n|
+      @invoice.invoice_items.build
+    end
     
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @invoices }
     end
   end
-  
-  def _index
-    @invoices = Invoice.all
-    
-    1.times.each do |n|
-      @invoice.invoice_items.build
-    end
-    
-    # unless @invoice.valid?
-    #   @invoice.invoice_items.each do |ii|
-    #     ii.price /= 100.0 if ii.valid?
-    #   end
-    # end
-  end
 
   # GET /invoices/1
   # GET /invoices/1.xml
   def show
-    @invoice = Invoice.find(params[:id])
-    
-    redirect_to :action => "index", :id => @invoice.id
-    
-    # respond_to do |format|
-    #   format.html # show.html.erb
-    #   format.xml  { render :xml => @invoice }
-    # end
+    redirect_to request.referer
   end
 
   # GET /invoices/new
@@ -81,8 +62,7 @@ class InvoicesController < ApplicationController
         format.html { redirect_to(@invoice, :notice => 'Invoice was successfully updated.') }
         format.xml  { head :ok }
       else
-        _index
-        format.html { render :action => "index" }
+        format.html { render :action => "edit" }
         format.xml  { render :xml => @invoice.errors, :status => :unprocessable_entity }
       end
     end
